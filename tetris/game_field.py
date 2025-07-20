@@ -17,14 +17,13 @@ class Field:
         self.screen.fill(self.background_color)
         pygame.display.flip()
 
-        falling_piece = Piece # throwaway
+        falling_piece = Piece # loading variable for scope use
 
         defined_piece_number = 7
 
         running = True
         is_falling = False
 
-        matrix = []
         init_x = self.width // 2
         init_y = 0
 
