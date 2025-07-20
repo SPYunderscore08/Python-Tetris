@@ -1,6 +1,6 @@
 class Piece:
     matrix = []
-    color = False # temporary (to hopefully only use up 1 bit)
+    color = ()
 
     def __init__(self, x, y):
         self.x = x
