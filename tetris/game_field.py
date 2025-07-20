@@ -2,11 +2,11 @@ import pygame
 from defined_game_pieces import *
 
 class Field:
-    def __init__(self, width, height, unit_scaling_factor, backround_color):
+    def __init__(self, width, height, unit_scaling_factor, background_color):
         self.width = width # in units -> 1 cell
         self.height = height
         self.unit_scaling_factor = unit_scaling_factor
-        self.background_color = backround_color
+        self.background_color = background_color
         self.screen = pygame.display.set_mode((self.width * unit_scaling_factor, self.height * unit_scaling_factor))
 
 
