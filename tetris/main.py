@@ -1,3 +1,4 @@
+import pygame
 from game_field import Field
 
 def main():
