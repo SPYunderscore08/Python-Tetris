@@ -16,7 +16,6 @@ class Field:
         pygame.display.set_caption(title)
         self.screen.fill(self.background_color)
 
-        falling_piece = Piece # creation of the variable for outer scope usage
 
         running = True
         is_falling = False
@@ -25,37 +24,51 @@ class Field:
         init_x = (self.width // 2) - matrix_offset - 1
         init_y = 0
 
+        falling_piece = Piece # creation of the variable for outer scope usage
+
+        former_falling_piece = Piece(init_x, init_y) # piece used for clearing lingering cells
+        former_falling_piece.matrix = [[0]]
+        former_falling_piece.color = self.background_color
+
         defined_piece_number = 7
 
         while running: # game loop
+            if not is_falling:
+                random_piece = random.randint(1, defined_piece_number)
+                match random_piece:
+                    case 1:
+                        falling_piece = LongPiece(init_x, init_y)
+
+                    case 2:
+                        falling_piece = LPiece(init_x, init_y)
+
+                    case 3:
+                        falling_piece = BackLPiece(init_x, init_y)
+
+                    case 4:
+                        falling_piece = SPiece(init_x, init_y)
+
+                    case 5:
+                        falling_piece = BackSPiece(init_x, init_y)
+
+                    case 6:
+                        falling_piece = Pyramid(init_x, init_y)
+
+                    case 7:
+                        falling_piece = Square(init_x + 1, init_y)
+
+                is_falling = True
+            self.draw_piece(former_falling_piece)
+            self.draw_piece(falling_piece)
+            pygame.display.flip()
+
+            former_falling_piece.matrix = falling_piece.matrix
+            former_falling_piece.x = falling_piece.x
+            former_falling_piece.y = falling_piece.y
+
+            falling_piece.y += 1 # todo
+
             for event in pygame.event.get():
-                if not is_falling:
-                    random_piece = random.randint(1, defined_piece_number)
-                    match random_piece:
-                        case 1:
-                            falling_piece = LongPiece(init_x, init_y)
-
-                        case 2:
-                            falling_piece = LPiece(init_x, init_y)
-
-                        case 3:
-                            falling_piece = BackLPiece(init_x, init_y)
-
-                        case 4:
-                            falling_piece = SPiece(init_x, init_y)
-
-                        case 5:
-                            falling_piece = BackSPiece(init_x, init_y)
-
-                        case 6:
-                            falling_piece = Pyramid(init_x , init_y)
-
-                        case 7:
-                            falling_piece = Square(init_x + 1, init_y)
-
-                    is_falling = True
-
-                self.draw_piece(falling_piece)
                 if event.type == pygame.QUIT:
                     running = False
 
@@ -74,4 +87,3 @@ class Field:
                             self.unit_scaling_factor
                         )
                     )
-        pygame.display.flip()
