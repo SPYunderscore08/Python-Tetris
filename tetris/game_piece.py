@@ -3,8 +3,8 @@ class Piece:
     color = ()
 
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        self.x = x # most left point of the matrix
+        self.y = y # highest point of the matrix
 
     def print_matrix(self):
         for i in range(len(self.matrix)):

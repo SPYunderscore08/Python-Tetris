@@ -46,14 +46,6 @@ class BackSPiece(Piece):
     ]
 
 
-class Square(Piece):
-    color = [235, 235, 50]
-    matrix = [
-        [True, True],
-        [True, True],
-    ]
-
-
 class Pyramid(Piece):
     color = [200, 50, 235]
     matrix = [
@@ -61,3 +53,12 @@ class Pyramid(Piece):
         [True , True , True ],
         [False, False, False],
     ]
+
+
+class Square(Piece):
+    color = [235, 235, 50]
+    matrix = [
+        [True, True],
+        [True, True],
+    ]
+
