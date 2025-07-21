@@ -9,13 +9,13 @@ class Field:
         self.unit_scaling_factor = unit_scaling_factor
         self.background_color = background_color
         self.screen = pygame.display.set_mode((self.width * unit_scaling_factor, self.height * unit_scaling_factor))
+        self.game_state_list = [[False] * self.width] * self.height
 
 
     def run(self):
         title = 'Tetris'
         pygame.display.set_caption(title)
         self.screen.fill(self.background_color)
-
 
         running = True
         is_falling = False
@@ -67,19 +67,23 @@ class Field:
             former_falling_piece.x = falling_piece.x
             former_falling_piece.y = falling_piece.y
 
-            #falling_piece.y += 0.001 # todo
+            falling_piece.y += 0.001 # todo
 
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
+                    self.draw_piece(former_falling_piece)
                     match event.key:
-                        case pygame.K_w:
+                        case pygame.K_w | pygame.K_UP:
                             falling_piece.turn_clockwise()
 
                         case pygame.K_z:
                             falling_piece.turn_counterclockwise()
 
+
                 elif event.type == pygame.QUIT:
                     running = False
+
+            # self.alter_game_state(falling_piece)
 
 
     def draw_piece(self, piece):
@@ -96,3 +100,6 @@ class Field:
                             self.unit_scaling_factor
                         )
                     )
+
+    def alter_game_state(self, falling_piece):
+        pass
