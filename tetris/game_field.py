@@ -58,6 +58,7 @@ class Field:
                         falling_piece = Square(init_x + 1, init_y)
 
                 is_falling = True
+
             self.draw_piece(former_falling_piece)
             self.draw_piece(falling_piece)
             pygame.display.flip()
@@ -66,10 +67,18 @@ class Field:
             former_falling_piece.x = falling_piece.x
             former_falling_piece.y = falling_piece.y
 
-            falling_piece.y += 1 # todo
+            #falling_piece.y += 0.001 # todo
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.KEYDOWN:
+                    match event.key:
+                        case pygame.K_w:
+                            falling_piece.turn_clockwise()
+
+                        case pygame.K_z:
+                            falling_piece.turn_counterclockwise()
+
+                elif event.type == pygame.QUIT:
                     running = False
 
 
