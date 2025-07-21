@@ -71,12 +71,13 @@ class Field:
             former_falling_piece.x = falling_piece.x
             former_falling_piece.y = falling_piece.y
 
-            falling_piece.y += 0.001 # todo
+            falling_piece.y += 0.0001 # todo
 
 
             for event in pygame.event.get():
                 self.draw_piece(former_falling_piece)
-                self.check_actions(event, falling_piece)
+                self.check_for_keydown(event, falling_piece)
+                self.check_for_keyup(event, falling_piece)
 
                 if event.type == pygame.QUIT:
                     running = False
@@ -121,7 +122,7 @@ class Field:
                     case 4:
                         falling_piece.turn_counterclockwise()
 
-    def check_actions(self, event, falling_piece):
+    def check_for_keydown(self, event, falling_piece):
 
         if event.type == pygame.KEYDOWN:
             match event.key:
@@ -141,7 +142,9 @@ class Field:
                     self.action_list[4] = True
             self.execute_current_actions(falling_piece)
 
-        elif event.type == pygame.KEYUP:
+
+    def check_for_keyup(self, event, falling_piece):
+        if event.type == pygame.KEYUP:
             match event.key:
                 case pygame.K_w | pygame.K_UP:
                     self.action_list[0] = False
