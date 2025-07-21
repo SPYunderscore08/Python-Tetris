@@ -4,21 +4,21 @@ from defined_game_pieces import *
 
 class Field:
     def __init__(self, width, height, unit_scaling_factor, background_color):
+        self.unit_size = 1
         self.width = width # in units -> 1 cell
         self.height = height
         self.unit_scaling_factor = unit_scaling_factor
         self.background_color = background_color
         self.screen = pygame.display.set_mode((self.width * unit_scaling_factor, self.height * unit_scaling_factor))
         self.game_state_list = [[False] * self.width] * self.height
+        self.number_of_actions = 5
+        self.action_list = [False] * self.number_of_actions
 
 
     def run(self):
         title = 'Tetris'
         pygame.display.set_caption(title)
         self.screen.fill(self.background_color)
-
-        running = True
-        is_falling = False
 
         matrix_offset = 1
         init_x = (self.width // 2) - matrix_offset - 1
@@ -30,7 +30,11 @@ class Field:
         former_falling_piece.matrix = [[0]]
         former_falling_piece.color = self.background_color
 
+        running = True
+        is_falling = False
         defined_piece_number = 7
+
+        pygame.key.set_repeat(120)
 
         while running: # game loop
             if not is_falling:
@@ -69,18 +73,12 @@ class Field:
 
             falling_piece.y += 0.001 # todo
 
+
             for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    self.draw_piece(former_falling_piece)
-                    match event.key:
-                        case pygame.K_w | pygame.K_UP:
-                            falling_piece.turn_clockwise()
+                self.draw_piece(former_falling_piece)
+                self.check_actions(event, falling_piece)
 
-                        case pygame.K_z:
-                            falling_piece.turn_counterclockwise()
-
-
-                elif event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:
                     running = False
 
             # self.alter_game_state(falling_piece)
@@ -103,3 +101,60 @@ class Field:
 
     def alter_game_state(self, falling_piece):
         pass
+
+    def execute_current_actions(self, falling_piece):
+        for i in range(len(self.action_list)):
+            if self.action_list[i]:
+                match i:
+                    case 0:
+                        falling_piece.turn_clockwise()
+
+                    case 1:
+                        falling_piece.x -= self.unit_size
+
+                    case 2:
+                        falling_piece.x += self.unit_size
+
+                    case 3:
+                        falling_piece.y += self.unit_size
+
+                    case 4:
+                        falling_piece.turn_counterclockwise()
+
+    def check_actions(self, event, falling_piece):
+
+        if event.type == pygame.KEYDOWN:
+            match event.key:
+                case pygame.K_w | pygame.K_UP:
+                    self.action_list[0] = True
+
+                case pygame.K_a | pygame.K_LEFT:
+                    self.action_list[1] = True
+
+                case pygame.K_d | pygame.K_RIGHT:
+                    self.action_list[2] = True
+
+                case pygame.K_s | pygame.K_DOWN:
+                    self.action_list[3] = True
+
+                case pygame.K_z:
+                    self.action_list[4] = True
+            self.execute_current_actions(falling_piece)
+
+        elif event.type == pygame.KEYUP:
+            match event.key:
+                case pygame.K_w | pygame.K_UP:
+                    self.action_list[0] = False
+
+                case pygame.K_a | pygame.K_LEFT:
+                    self.action_list[1] = False
+
+                case pygame.K_d | pygame.K_RIGHT:
+                    self.action_list[2] = False
+
+                case pygame.K_s | pygame.K_DOWN:
+                    self.action_list[3] = False
+
+                case pygame.K_z:
+                    self.action_list[4] = False
+
