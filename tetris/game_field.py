@@ -77,7 +77,7 @@ class Field:
             for event in pygame.event.get():
                 self.draw_piece(former_falling_piece)
                 self.check_for_keydown(event, falling_piece)
-                self.check_for_keyup(event, falling_piece)
+                self.check_for_keyup(event)
 
                 if event.type == pygame.QUIT:
                     running = False
@@ -143,7 +143,7 @@ class Field:
             self.execute_current_actions(falling_piece)
 
 
-    def check_for_keyup(self, event, falling_piece):
+    def check_for_keyup(self, event):
         if event.type == pygame.KEYUP:
             match event.key:
                 case pygame.K_w | pygame.K_UP:
