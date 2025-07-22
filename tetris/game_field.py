@@ -3,17 +3,17 @@ import random
 from defined_game_pieces import *
 
 class Field:
-    def __init__(self, width, height, unit_scaling_factor, background_color):
+    def __init__(self, width, height, unit_scaling_factor, background_color, tick_rate = 1000):
         self.unit_size = 1
         self.width = width # in units -> 1 cell
         self.height = height
         self.unit_scaling_factor = unit_scaling_factor
         self.background_color = background_color
+        self.tick_rate = tick_rate
         self.screen = pygame.display.set_mode((self.width * unit_scaling_factor, self.height * unit_scaling_factor))
         self.game_state_list = [[False] * self.width] * self.height
         self.number_of_actions = 5
         self.action_list = [False] * self.number_of_actions
-
 
     def run(self):
         title = 'Tetris'
@@ -36,7 +36,10 @@ class Field:
 
         pygame.key.set_repeat(120)
 
-        while running: # game loop
+        update_y_position = 10000 # event
+        pygame.time.set_timer(update_y_position, self.tick_rate)
+
+        while running:
             if not is_falling:
                 random_piece = random.randint(1, defined_piece_number)
                 match random_piece:
@@ -71,10 +74,11 @@ class Field:
             former_falling_piece.x = falling_piece.x
             former_falling_piece.y = falling_piece.y
 
-            falling_piece.y += 0.0001 # todo
-
 
             for event in pygame.event.get():
+                if event.type == update_y_position:
+                    falling_piece.y += 1
+
                 self.draw_piece(former_falling_piece)
                 self.check_for_keydown(event, falling_piece)
                 self.check_for_keyup(event)
@@ -83,7 +87,6 @@ class Field:
                     running = False
 
             # self.alter_game_state(falling_piece)
-
 
     def draw_piece(self, piece):
         for i in range(len(piece.matrix)):
@@ -103,7 +106,7 @@ class Field:
     def alter_game_state(self, falling_piece):
         pass
 
-    def execute_current_actions(self, falling_piece):
+    def execute_current_actions(self, falling_piece): # todo fix
         for i in range(len(self.action_list)):
             if self.action_list[i]:
                 match i:
@@ -122,8 +125,7 @@ class Field:
                     case 4:
                         falling_piece.turn_counterclockwise()
 
-    def check_for_keydown(self, event, falling_piece):
-
+    def check_for_keydown(self, event, falling_piece): # todo fix
         if event.type == pygame.KEYDOWN:
             match event.key:
                 case pygame.K_w | pygame.K_UP:
@@ -141,7 +143,6 @@ class Field:
                 case pygame.K_z:
                     self.action_list[4] = True
             self.execute_current_actions(falling_piece)
-
 
     def check_for_keyup(self, event):
         if event.type == pygame.KEYUP:
