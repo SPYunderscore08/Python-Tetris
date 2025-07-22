@@ -14,6 +14,8 @@ class Field:
         self.game_state_list = [[False] * self.width] * self.height
         self.number_of_actions = 5
         self.action_list = [False] * self.number_of_actions
+        self.update_y_position = 10000 # event
+        self.allow_tick_rate_change = True
 
     def run(self):
         title = 'Tetris'
@@ -35,9 +37,7 @@ class Field:
         defined_piece_number = 7
 
         pygame.key.set_repeat(120)
-
-        update_y_position = 10000 # event
-        pygame.time.set_timer(update_y_position, self.tick_rate)
+        pygame.time.set_timer(self.update_y_position, self.tick_rate)
 
         while running:
             if not is_falling:
@@ -66,7 +66,6 @@ class Field:
 
                 is_falling = True
 
-            self.draw_piece(former_falling_piece)
             self.draw_piece(falling_piece)
             pygame.display.flip()
 
@@ -74,14 +73,13 @@ class Field:
             former_falling_piece.x = falling_piece.x
             former_falling_piece.y = falling_piece.y
 
-
             for event in pygame.event.get():
-                if event.type == update_y_position:
-                    falling_piece.y += 1
-
                 self.draw_piece(former_falling_piece)
                 self.check_for_keydown(event, falling_piece)
                 self.check_for_keyup(event)
+
+                if event.type == self.update_y_position:
+                    falling_piece.y += 1
 
                 if event.type == pygame.QUIT:
                     running = False
@@ -120,7 +118,9 @@ class Field:
                         falling_piece.x += self.unit_size
 
                     case 3:
-                        falling_piece.y += self.unit_size
+                        if self.allow_tick_rate_change:
+                            pygame.time.set_timer(self.update_y_position, self.tick_rate // 15) # todo
+                            self.allow_tick_rate_change = False
 
                     case 4:
                         falling_piece.turn_counterclockwise()
@@ -158,6 +158,8 @@ class Field:
 
                 case pygame.K_s | pygame.K_DOWN:
                     self.action_list[3] = False
+                    self.allow_tick_rate_change = True
+                    pygame.time.set_timer(self.update_y_position, self.tick_rate)
 
                 case pygame.K_z:
                     self.action_list[4] = False
