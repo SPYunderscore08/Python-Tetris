@@ -3,19 +3,24 @@ import random
 from defined_game_pieces import *
 
 class Field:
-    def __init__(self, width, height, unit_scaling_factor, background_color, tick_rate = 1000):
+    def __init__(self, width, height, unit_scaling_factor, background_color, init_tick_rate = 1000):
         self.unit_size = 1
         self.width = width # in units -> 1 cell
         self.height = height
         self.unit_scaling_factor = unit_scaling_factor
         self.background_color = background_color
-        self.tick_rate = tick_rate
+        self.init_tick_rate = init_tick_rate
+        self.tick_rate = self.init_tick_rate
         self.screen = pygame.display.set_mode((self.width * unit_scaling_factor, self.height * unit_scaling_factor))
         self.game_state_list = [[False] * self.width] * self.height
         self.number_of_actions = 5
         self.action_list = [False] * self.number_of_actions
-        self.event_update_y_position = pygame.USEREVENT + 1
-        self.allow_tick_rate_change = True
+
+        self.event_update_x_negative_position = pygame.USEREVENT + 1
+        self.event_update_x_positive_position = pygame.USEREVENT + 2
+        self.event_update_y_position = pygame.USEREVENT + 3
+        self.allow_x_tick_rate_change = True
+        self.allow_y_tick_rate_change = True
 
     def run(self):
         title = 'Tetris'
@@ -81,6 +86,12 @@ class Field:
                 self.check_for_keydown(event)
                 self.check_for_keyup(event)
 
+                if event.type == self.event_update_x_negative_position:
+                    falling_piece.x -= self.unit_size
+
+                if event.type == self.event_update_x_positive_position:
+                    falling_piece.x += self.unit_size
+
                 if event.type == self.event_update_y_position:
                     falling_piece.y += 1
 
@@ -115,15 +126,19 @@ class Field:
                         falling_piece.turn_clockwise()
 
                     case 1:
-                        falling_piece.x -= self.unit_size
+                        if self.allow_x_tick_rate_change:
+                            pygame.time.set_timer(self.event_update_x_negative_position, self.init_tick_rate // 15)
+                            self.allow_x_tick_rate_change = False
 
                     case 2:
-                        falling_piece.x += self.unit_size
+                        if self.allow_x_tick_rate_change:
+                            pygame.time.set_timer(self.event_update_x_positive_position, self.init_tick_rate // 15)
+                            self.allow_x_tick_rate_change = False
 
                     case 3:
-                        if self.allow_tick_rate_change:
+                        if self.allow_y_tick_rate_change:
                             pygame.time.set_timer(self.event_update_y_position, self.tick_rate // 15)
-                            self.allow_tick_rate_change = False
+                            self.allow_y_tick_rate_change = False
 
                     case 4:
                         falling_piece.turn_counterclockwise()
@@ -154,13 +169,17 @@ class Field:
 
                 case pygame.K_a | pygame.K_LEFT:
                     self.action_list[1] = False
+                    self.allow_x_tick_rate_change = True
+                    pygame.time.set_timer(self.event_update_x_negative_position, 0)
 
                 case pygame.K_d | pygame.K_RIGHT:
                     self.action_list[2] = False
+                    self.allow_x_tick_rate_change = True
+                    pygame.time.set_timer(self.event_update_x_positive_position, 0)
 
                 case pygame.K_s | pygame.K_DOWN:
                     self.action_list[3] = False
-                    self.allow_tick_rate_change = True
+                    self.allow_y_tick_rate_change = True
                     pygame.time.set_timer(self.event_update_y_position, self.tick_rate)
 
                 case pygame.K_z:
