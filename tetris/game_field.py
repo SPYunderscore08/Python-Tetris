@@ -15,11 +15,11 @@ class Field:
         self.game_state_list = [[False] * self.width] * self.height
         self.number_of_actions = 5
         self.action_list = [False] * self.number_of_actions
-
-        self.event_update_x_negative_position = pygame.USEREVENT + 1
-        self.event_update_x_positive_position = pygame.USEREVENT + 2
+        self.event_update_negative_x_position = pygame.USEREVENT + 1
+        self.event_update_positive_x_position = pygame.USEREVENT + 2
         self.event_update_y_position = pygame.USEREVENT + 3
-        self.allow_x_tick_rate_change = True
+        self.allow_negative_x_tick_rate_change = True
+        self.allow_positive_x_tick_rate_change = True
         self.allow_y_tick_rate_change = True
 
     def run(self):
@@ -41,7 +41,6 @@ class Field:
         is_falling = False
         defined_piece_number = 7
 
-        pygame.key.set_repeat(120)
         pygame.time.set_timer(self.event_update_y_position, self.tick_rate)
 
         while running:
@@ -79,17 +78,16 @@ class Field:
             former_falling_piece.y = falling_piece.y
 
             self.draw_piece(former_falling_piece)
-            pygame.time.delay(1000 // 60)
+            pygame.time.delay(1000 // 60) # one frame at 60 fps
             self.execute_current_actions(falling_piece)
 
             for event in pygame.event.get():
                 self.check_for_keydown(event)
                 self.check_for_keyup(event)
-
-                if event.type == self.event_update_x_negative_position:
+                if event.type == self.event_update_negative_x_position:
                     falling_piece.x -= self.unit_size
 
-                if event.type == self.event_update_x_positive_position:
+                if event.type == self.event_update_positive_x_position:
                     falling_piece.x += self.unit_size
 
                 if event.type == self.event_update_y_position:
@@ -126,14 +124,14 @@ class Field:
                         falling_piece.turn_clockwise()
 
                     case 1:
-                        if self.allow_x_tick_rate_change:
-                            pygame.time.set_timer(self.event_update_x_negative_position, self.init_tick_rate // 15)
-                            self.allow_x_tick_rate_change = False
+                        if self.allow_negative_x_tick_rate_change:
+                            pygame.time.set_timer(self.event_update_negative_x_position, self.init_tick_rate // 15)
+                            self.allow_negative_x_tick_rate_change = False
 
                     case 2:
-                        if self.allow_x_tick_rate_change:
-                            pygame.time.set_timer(self.event_update_x_positive_position, self.init_tick_rate // 15)
-                            self.allow_x_tick_rate_change = False
+                        if self.allow_positive_x_tick_rate_change:
+                            pygame.time.set_timer(self.event_update_positive_x_position, self.init_tick_rate // 15)
+                            self.allow_positive_x_tick_rate_change = False
 
                     case 3:
                         if self.allow_y_tick_rate_change:
@@ -169,13 +167,13 @@ class Field:
 
                 case pygame.K_a | pygame.K_LEFT:
                     self.action_list[1] = False
-                    self.allow_x_tick_rate_change = True
-                    pygame.time.set_timer(self.event_update_x_negative_position, 0)
+                    self.allow_negative_x_tick_rate_change = True
+                    pygame.time.set_timer(self.event_update_negative_x_position, 0)
 
                 case pygame.K_d | pygame.K_RIGHT:
                     self.action_list[2] = False
-                    self.allow_x_tick_rate_change = True
-                    pygame.time.set_timer(self.event_update_x_positive_position, 0)
+                    self.allow_positive_x_tick_rate_change = True
+                    pygame.time.set_timer(self.event_update_positive_x_position, 0)
 
                 case pygame.K_s | pygame.K_DOWN:
                     self.action_list[3] = False
