@@ -14,8 +14,8 @@ class Field:
         self.tick_rate = self.init_tick_rate
         self.screen = pygame.display.set_mode((self.width * unit_scaling_factor, self.height * unit_scaling_factor))
         self.game_state_list = [[False] * self.width] * self.height
-        self.number_of_actions = 5
-        self.action_list = [False] * self.number_of_actions
+        self.number_of_unique_actions = 5
+        self.action_list = [False] * self.number_of_unique_actions
         self.event_update_y_position = pygame.USEREVENT + 1
         self.event_left_key_held = pygame.USEREVENT + 2
         self.event_right_key_held = pygame.USEREVENT + 3
@@ -82,7 +82,6 @@ class Field:
             former_falling_piece.y = falling_piece.y
 
             self.draw_piece(former_falling_piece)
-            # pygame.time.delay(1000 // 60) # one frame at 60 fps
 
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -109,25 +108,19 @@ class Field:
             case pygame.K_w | pygame.K_UP:
                 falling_piece.turn_clockwise()
 
-            case (pygame.K_a | pygame.K_LEFT) | (pygame.K_d | pygame.K_RIGHT):
-                if self.left_is_held and self.right_is_held:
-                    self.allow_x_left_tick_rate_change = True
-                    self.allow_x_right_tick_rate_change = True
+            case pygame.K_a | pygame.K_LEFT:
+                falling_piece.x -= 1
+                self.left_is_held = True
+                if self.allow_x_left_tick_rate_change:
+                    self.allow_x_left_tick_rate_change = False
+                    pygame.time.set_timer(self.event_left_key_held, self.init_tick_rate // 15)
 
-                    pygame.time.set_timer(self.event_left_key_held, 0)
-                    pygame.time.set_timer(self.event_right_key_held, 0)
-
-                elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                    self.left_is_held = True
-                    if self.allow_x_left_tick_rate_change:
-                        self.allow_x_left_tick_rate_change = False
-                        pygame.time.set_timer(self.event_left_key_held, self.init_tick_rate // 15)
-
-                elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                    self.right_is_held = True
-                    if self.allow_x_right_tick_rate_change:
-                        self.allow_x_right_tick_rate_change = False
-                        pygame.time.set_timer(self.event_right_key_held, self.init_tick_rate // 15)
+            case pygame.K_d | pygame.K_RIGHT:
+                falling_piece.x += 1
+                self.right_is_held = True
+                if self.allow_x_right_tick_rate_change:
+                    self.allow_x_right_tick_rate_change = False
+                    pygame.time.set_timer(self.event_right_key_held, self.init_tick_rate // 15)
 
             case pygame.K_s | pygame.K_DOWN:
                 if self.allow_y_tick_rate_change:
