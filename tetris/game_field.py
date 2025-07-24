@@ -123,15 +123,25 @@ class Field:
                     case 0:
                         falling_piece.turn_clockwise()
 
-                    case 1:
-                        if self.allow_negative_x_tick_rate_change:
-                            pygame.time.set_timer(self.event_update_negative_x_position, self.init_tick_rate // 15)
-                            self.allow_negative_x_tick_rate_change = False
+                    case 1 | 2:
+                        if self.action_list[1] and self.action_list[2]:
+                            if not self.allow_negative_x_tick_rate_change:
+                                self.allow_negative_x_tick_rate_change = True
 
-                    case 2:
-                        if self.allow_positive_x_tick_rate_change:
-                            pygame.time.set_timer(self.event_update_positive_x_position, self.init_tick_rate // 15)
-                            self.allow_positive_x_tick_rate_change = False
+                            if not self.allow_positive_x_tick_rate_change:
+                                self.allow_positive_x_tick_rate_change = True
+
+                            pygame.time.set_timer(self.event_update_negative_x_position, 0)
+                            pygame.time.set_timer(self.event_update_positive_x_position, 0)
+
+                        elif self.action_list[1]:
+                            if self.allow_negative_x_tick_rate_change:
+                                pygame.time.set_timer(self.event_update_negative_x_position, self.init_tick_rate // 15)
+                                self.allow_negative_x_tick_rate_change = False
+                        else:
+                            if self.allow_positive_x_tick_rate_change:
+                                pygame.time.set_timer(self.event_update_positive_x_position, self.init_tick_rate // 15)
+                                self.allow_positive_x_tick_rate_change = False
 
                     case 3:
                         if self.allow_y_tick_rate_change:
