@@ -91,11 +91,12 @@ class Field:
                 if event.type == pygame.KEYUP:
                     self.check_for_keyup(event)
 
-                if event.type == self.event_left_key_held:
-                    falling_piece.x -= 1
+                if not (self.left_is_held and self.right_is_held):
+                    if event.type == self.event_left_key_held:
+                        falling_piece.x -= 1
 
-                if event.type == self.event_right_key_held:
-                    falling_piece.x += 1
+                    elif event.type == self.event_right_key_held:
+                        falling_piece.x += 1
 
                 if event.type == self.event_update_y_position or event.type == self.event_down_key_held:
                     falling_piece.y += 1
@@ -110,22 +111,19 @@ class Field:
 
             case (pygame.K_a | pygame.K_LEFT) | (pygame.K_d | pygame.K_RIGHT):
                 if self.left_is_held and self.right_is_held:
-                    if not self.allow_x_left_tick_rate_change:
-                        self.allow_x_left_tick_rate_change = True
-
-                    if not self.allow_x_right_tick_rate_change:
-                        self.allow_x_right_tick_rate_change = True
+                    self.allow_x_left_tick_rate_change = True
+                    self.allow_x_right_tick_rate_change = True
 
                     pygame.time.set_timer(self.event_left_key_held, 0)
                     pygame.time.set_timer(self.event_right_key_held, 0)
 
-                if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
                     self.left_is_held = True
                     if self.allow_x_left_tick_rate_change:
                         self.allow_x_left_tick_rate_change = False
                         pygame.time.set_timer(self.event_left_key_held, self.init_tick_rate // 15)
 
-                if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                     self.right_is_held = True
                     if self.allow_x_right_tick_rate_change:
                         self.allow_x_right_tick_rate_change = False
