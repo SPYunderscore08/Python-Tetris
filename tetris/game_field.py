@@ -1,7 +1,13 @@
 import pygame
 import random
+from enum import Enum
 
 from defined_game_pieces import *
+
+class HorizontalKeyStatus(Enum):
+    LEFT_DOWN = -1
+    NEITHER = 0
+    RIGHT_DOWN = 1
 
 class Field:
     def __init__(self, width, height, unit_scaling_factor, background_color, init_tick_rate = 1000):
@@ -20,8 +26,7 @@ class Field:
         self.event_left_key_held = pygame.USEREVENT + 2
         self.event_right_key_held = pygame.USEREVENT + 3
         self.event_down_key_held = pygame.USEREVENT + 4
-        self.left_is_held = False
-        self.right_is_held = False
+        self.last_horizontal_key_held = HorizontalKeyStatus.NEITHER
         self.allow_x_left_tick_rate_change = True
         self.allow_x_right_tick_rate_change = True
         self.allow_y_tick_rate_change = True
@@ -90,12 +95,11 @@ class Field:
                 if event.type == pygame.KEYUP:
                     self.check_for_keyup(event)
 
-                if not (self.left_is_held and self.right_is_held):
-                    if event.type == self.event_left_key_held:
-                        falling_piece.x -= 1
+                if event.type == self.event_left_key_held and self.last_horizontal_key_held == HorizontalKeyStatus.LEFT_DOWN:
+                    falling_piece.x -= 1
 
-                    elif event.type == self.event_right_key_held:
-                        falling_piece.x += 1
+                elif event.type == self.event_right_key_held and self.last_horizontal_key_held == HorizontalKeyStatus.RIGHT_DOWN:
+                    falling_piece.x += 1
 
                 if event.type == self.event_update_y_position or event.type == self.event_down_key_held:
                     falling_piece.y += 1
@@ -109,15 +113,15 @@ class Field:
                 falling_piece.turn_clockwise()
 
             case pygame.K_a | pygame.K_LEFT:
+                self.last_horizontal_key_held = HorizontalKeyStatus.LEFT_DOWN
                 falling_piece.x -= 1
-                self.left_is_held = True
                 if self.allow_x_left_tick_rate_change:
                     self.allow_x_left_tick_rate_change = False
                     pygame.time.set_timer(self.event_left_key_held, self.init_tick_rate // 15)
 
             case pygame.K_d | pygame.K_RIGHT:
+                self.last_horizontal_key_held = HorizontalKeyStatus.RIGHT_DOWN
                 falling_piece.x += 1
-                self.right_is_held = True
                 if self.allow_x_right_tick_rate_change:
                     self.allow_x_right_tick_rate_change = False
                     pygame.time.set_timer(self.event_right_key_held, self.init_tick_rate // 15)
@@ -133,12 +137,12 @@ class Field:
     def check_for_keyup(self, event):
         match event.key:
             case pygame.K_a | pygame.K_LEFT:
-                self.left_is_held = False
+                self.last_horizontal_key_held = HorizontalKeyStatus.RIGHT_DOWN
                 pygame.time.set_timer(self.event_left_key_held, 0)
                 self.allow_x_left_tick_rate_change = True
 
             case pygame.K_d | pygame.K_RIGHT:
-                self.right_is_held = False
+                self.last_horizontal_key_held = HorizontalKeyStatus.LEFT_DOWN
                 pygame.time.set_timer(self.event_right_key_held, 0)
                 self.allow_x_right_tick_rate_change = True
 
