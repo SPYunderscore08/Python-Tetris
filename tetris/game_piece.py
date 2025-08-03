@@ -29,3 +29,5 @@ class Piece:
                 self.matrix[j][n - 1 - i] = self.matrix[n - 1 - i][n - 1 - j]
                 self.matrix[n - 1 - i][n - 1 - j] = self.matrix[n - 1 - j][i]
                 self.matrix[n - 1 - j][i] = temp
+
+

@@ -4,22 +4,34 @@ from enum import Enum
 
 from defined_game_pieces import *
 
+def get_biggest_matrix():
+    biggest_matrix = 0
+    for unique_piece in Piece.__subclasses__():
+        if len(unique_piece.matrix) > biggest_matrix:
+            biggest_matrix = len(unique_piece.matrix)
+
+        if len(unique_piece.matrix[0]) > biggest_matrix:
+            biggest_matrix = len(unique_piece.matrix[0])
+    return biggest_matrix
+
 class HorizontalKeyStatus(Enum):
     LEFT_DOWN = -1
     NEITHER = 0
     RIGHT_DOWN = 1
 
 class Field:
-    def __init__(self, width, height, unit_scaling_factor, background_color, init_tick_rate = 1000):
+    def __init__(self, width, height, unit_scaling_factor, background_color, init_x_tick_rate = 1000, init_y_tick_rate = 1000):
         self.unit_size = 1
         self.width = width # in units -> 1 cell
         self.height = height
         self.unit_scaling_factor = unit_scaling_factor
         self.background_color = background_color
-        self.init_tick_rate = init_tick_rate
-        self.tick_rate = self.init_tick_rate
+        self.init_x_tick_rate = init_x_tick_rate
+        self.init_y_tick_rate = init_y_tick_rate
+        self.y_tick_rate = self.init_y_tick_rate
         self.screen = pygame.display.set_mode((self.width * unit_scaling_factor, self.height * unit_scaling_factor))
-        self.game_state_list = [[False] * self.width] * self.height
+        self.biggest_matrix = get_biggest_matrix()
+        self.game_state_list = [[False] * self.width] * (self.height + self.biggest_matrix)
         self.number_of_unique_actions = 5
         self.action_list = [False] * self.number_of_unique_actions
         self.event_update_y_position = pygame.USEREVENT + 1
@@ -50,7 +62,7 @@ class Field:
         is_falling = False
         defined_piece_number = 7
 
-        pygame.time.set_timer(self.event_update_y_position, self.tick_rate)
+        pygame.time.set_timer(self.event_update_y_position, self.y_tick_rate)
 
         while running:
             if not is_falling:
@@ -117,19 +129,19 @@ class Field:
                 falling_piece.x -= 1
                 if self.allow_x_left_tick_rate_change:
                     self.allow_x_left_tick_rate_change = False
-                    pygame.time.set_timer(self.event_left_key_held, self.init_tick_rate // 15)
+                    pygame.time.set_timer(self.event_left_key_held, self.init_x_tick_rate // 15)
 
             case pygame.K_d | pygame.K_RIGHT:
                 self.last_horizontal_key_held = HorizontalKeyStatus.RIGHT_DOWN
                 falling_piece.x += 1
                 if self.allow_x_right_tick_rate_change:
                     self.allow_x_right_tick_rate_change = False
-                    pygame.time.set_timer(self.event_right_key_held, self.init_tick_rate // 15)
+                    pygame.time.set_timer(self.event_right_key_held, self.init_x_tick_rate // 15)
 
             case pygame.K_s | pygame.K_DOWN:
                 if self.allow_y_tick_rate_change:
                     self.allow_y_tick_rate_change = False
-                    pygame.time.set_timer(self.event_down_key_held, self.tick_rate // 15)
+                    pygame.time.set_timer(self.event_down_key_held, self.y_tick_rate // 15)
 
             case pygame.K_z:
                 falling_piece.turn_counterclockwise()
