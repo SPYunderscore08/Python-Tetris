@@ -31,7 +31,7 @@ class Field:
         self.y_tick_rate = self.init_y_tick_rate
         self.screen = pygame.display.set_mode((self.width * unit_scaling_factor, self.height * unit_scaling_factor))
         self.biggest_matrix = get_biggest_matrix()
-        self.game_state_list = [[False] * self.width] * (self.height + self.biggest_matrix)
+        self.game_state_list = [[False] * self.width for _ in range(self.height + self.biggest_matrix)]
         self.number_of_unique_actions = 5
         self.action_list = [False] * self.number_of_unique_actions
         self.event_update_y_position = pygame.USEREVENT + 1
@@ -185,6 +185,10 @@ class Field:
         for y in range(len(falling_piece.matrix)):
             for x in range(len(falling_piece.matrix[y])):
                 print(falling_piece.matrix[y][x])
+                print(falling_piece.y + y)
+                print()
+                print(falling_piece.x + x)
+                print()
                 self.game_state_list[falling_piece.y + y][falling_piece.x + x] = falling_piece.matrix[y][x]
         print()
         for row in self.game_state_list:
