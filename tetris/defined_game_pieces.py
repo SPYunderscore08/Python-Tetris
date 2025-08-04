@@ -1,4 +1,5 @@
 from game_piece import Piece
+import copy
 
 class LongPiece(Piece):
     color = [50, 235, 235]
@@ -9,6 +10,11 @@ class LongPiece(Piece):
         [False, False, False, False],
     ]
 
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.color = LongPiece.color.copy()
+        self.matrix = copy.deepcopy(LongPiece.matrix)
+
 
 class LPiece(Piece):
     color = [235, 155, 50]
@@ -17,6 +23,11 @@ class LPiece(Piece):
         [True , True , True ],
         [False, False, False],
     ]
+
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.color = LPiece.color.copy()
+        self.matrix = copy.deepcopy(LPiece.matrix)
 
 
 class BackLPiece(Piece):
@@ -27,6 +38,11 @@ class BackLPiece(Piece):
         [False, False, False],
     ]
 
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.color = BackLPiece.color.copy()
+        self.matrix = copy.deepcopy(BackLPiece.matrix)
+
 
 class SPiece(Piece):
     color = [50, 235, 60]
@@ -35,6 +51,11 @@ class SPiece(Piece):
         [True , True , False],
         [False, False, False],
     ]
+
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.color = SPiece.color.copy()
+        self.matrix = copy.deepcopy(SPiece.matrix)
 
 
 class BackSPiece(Piece):
@@ -45,6 +66,11 @@ class BackSPiece(Piece):
         [False, False, False],
     ]
 
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.color = BackSPiece.color.copy()
+        self.matrix = copy.deepcopy(BackSPiece.matrix)
+
 
 class Pyramid(Piece):
     color = [200, 50, 235]
@@ -54,6 +80,11 @@ class Pyramid(Piece):
         [False, False, False],
     ]
 
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.color = Pyramid.color.copy()
+        self.matrix = copy.deepcopy(Pyramid.matrix)
+
 
 class Square(Piece):
     color = [235, 235, 50]
@@ -62,3 +93,7 @@ class Square(Piece):
         [True, True],
     ]
 
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.color = Square.color.copy()
+        self.matrix = copy.deepcopy(Square.matrix)
