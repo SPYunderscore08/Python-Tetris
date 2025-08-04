@@ -94,11 +94,12 @@ class Field:
             self.draw_piece(falling_piece)
             pygame.display.flip()
 
-            former_falling_piece.matrix = falling_piece.matrix
-            former_falling_piece.x = falling_piece.x
-            former_falling_piece.y = falling_piece.y
-
-            self.draw_piece(former_falling_piece)
+            is_falling = self.check_game_state(falling_piece)
+            if is_falling:
+                former_falling_piece.matrix = falling_piece.matrix
+                former_falling_piece.x = falling_piece.x
+                former_falling_piece.y = falling_piece.y
+                self.draw_piece(former_falling_piece)
 
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -118,6 +119,7 @@ class Field:
 
                 if event.type == pygame.QUIT:
                     running = False
+
 
     def check_for_keydown(self, event, falling_piece):
         match event.key:
@@ -179,3 +181,14 @@ class Field:
 
     def alter_game_state(self, falling_piece):
         pass
+
+    def check_game_state(self, falling_piece):
+        closest_row_to_ground = 0
+
+        for closest_row_to_ground in reversed(range(len(falling_piece.matrix))):
+            if True in falling_piece.matrix[closest_row_to_ground]:
+                break
+
+        if falling_piece.y >= self.height - closest_row_to_ground - 1:
+            return False
+        return True
