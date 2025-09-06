@@ -1,8 +1,8 @@
 from game_field import Field
 
 def main():
-    field_width = 5
-    field_height = 10
+    field_width = 38
+    field_height = 25
     unit_scaling_factor = 45
     background_color = (20, 20, 20)
 

@@ -184,13 +184,12 @@ class Field:
     def alter_game_state(self, falling_piece):
         for y in range(len(falling_piece.matrix)):
             for x in range(len(falling_piece.matrix[y])):
-                print(falling_piece.matrix[y][x])
-                print(falling_piece.y + y)
-                print()
-                print(falling_piece.x + x)
-                print()
-                self.game_state_list[falling_piece.y + y][falling_piece.x + x] = falling_piece.matrix[y][x]
-        print()
+                if falling_piece.y + y + self.biggest_matrix >= self.height + self.biggest_matrix:
+                    break
+                if (falling_piece.x + x >= self.width or falling_piece.x + x < 0) and not falling_piece.matrix[y][x] :
+                    continue
+                self.game_state_list[falling_piece.y + y + self.biggest_matrix][falling_piece.x + x] = falling_piece.matrix[y][x]
+
         for row in self.game_state_list:
             print(row)
         print()
